@@ -5,8 +5,7 @@ import io.javalin.Javalin;
 import io.javalin.http.*;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
 
 public class ResourceController {
     private String htmx = "";
@@ -31,8 +30,14 @@ public class ResourceController {
 	}
 
 	private String getResourceFromFilePath(String filePath) throws IOException {
-		System.out.println("Loading resource from: " + filePath);
-		return Files.readString(Path.of(Objects.requireNonNull(this.getClass().getResource(filePath)).getFile()));
+        Main.logger.info("Loading resource from: {}", filePath);
+        var stream = this.getClass().getResourceAsStream(filePath);
+        if (stream == null) {
+            throw new IOException(filePath + " was not found.");
+        }
+        var bytes = stream.readAllBytes();
+        stream.close();
+        return new String(bytes, StandardCharsets.UTF_8);
 	}
 
     public void getHtmx(Context ctx) {

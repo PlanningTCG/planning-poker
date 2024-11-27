@@ -1,0 +1,26 @@
+name: publish
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check-out
+        uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.REGISTRY_TOKEN}}
+      - name: Build & publish image
+        run: |
+          export VERSION=$(sed 's/^.//' <<< ${{github.event.release.tag_name}})
+          export REPO=$(sed 's/\(.*\)/\L\1/' <<< $GITHUB_REPOSITORY)
+          docker build . -t ghcr.io/$REPO:latest -t ghcr.io/$REPO:$VERSION
+          docker push ghcr.io/$REPO:latest
+          docker push ghcr.io/$REPO:$VERSION

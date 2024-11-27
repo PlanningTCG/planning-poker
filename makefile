@@ -26,6 +26,13 @@ clean:
 	rm -fr ./target
 	mvn clean
 
+build-docker:
+	@echo "Building Docker image..."
+	docker build -t $(BINARY_NAME) .
+
+run-docker:
+	@echo "Running Docker container..."
+	docker run -p 5000:5000 -it --rm $(BINARY_NAME)
 
 .PHONY:
 	debug watch build run build-run clean
