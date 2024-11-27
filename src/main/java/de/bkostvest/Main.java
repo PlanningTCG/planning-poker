@@ -11,6 +11,6 @@ public class Main {
         var app = Javalin.create();
 
         router.setRoutes(app);
-        app.start(5000);
+        app.start("0.0.0.0", 5000);
     }
 }
