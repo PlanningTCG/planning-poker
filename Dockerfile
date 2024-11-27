@@ -1,18 +1,14 @@
-FROM alpine:3.20
-LABEL org.opencontainers.image.source=https://github.com/0x6DD8/planning-poker
+FROM alpine:3.20 AS builder
 
 WORKDIR /build
 COPY . .
-RUN apk update && \
-    apk add openjdk21 maven make && \
-    make build && \
-    mkdir /app && \
-    mv /build/target/Planning-Poker*.jar /app/planningpoker.jar && \
-    rm -rf /build && \
-    apk del maven make && \
-    apk cache clean
+RUN apk add openjdk21 maven make && \
+    make build
 
-# Start container
+FROM alpine:3.20
+LABEL org.opencontainers.image.source=https://github.com/0x6DD8/planning-poker
 WORKDIR /app
+COPY --from=builder /build/target/Planning-Poker*.jar planningpoker.jar
+RUN apk add --no-cache openjdk21
 EXPOSE 5000
 ENTRYPOINT [ "java", "-jar", "./planningpoker.jar" ]
