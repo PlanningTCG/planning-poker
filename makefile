@@ -19,6 +19,9 @@ build:
 run:
 	java -jar ./target/$(JAR_NAME).jar
 
+test:
+	mvn test
+
 build-run: build run
 
 # Clean up build artifacts
