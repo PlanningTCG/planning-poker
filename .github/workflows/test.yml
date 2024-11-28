@@ -15,7 +15,7 @@ jobs:
         with:
           java-version: 21
       - name: Build
-        run: make compile
+        run: make build
       - name: Test
         run: make test
       - name: Upload build artifact
