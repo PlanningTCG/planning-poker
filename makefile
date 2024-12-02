@@ -1,7 +1,5 @@
-# Function to convert a string to lowercase
-lc = $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(subst G,g,$(subst H,h,$(subst I,i,$(subst J,j,$(subst K,k,$(subst L,l,$(subst M,m,$(subst N,n,$(subst O,o,$(subst P,p,$(subst Q,q,$(subst R,r,$(subst S,s,$(subst T,t,$(subst U,u,$(subst V,v,$(subst W,w,$(subst X,x,$(subst Y,y,$(subst Z,z,$1))))))))))))))))))))))))))
-
 JAR_NAME = $(shell mvn help:evaluate -Dexpression=project.build.finalName -q -DforceStdout)
+JAR_NAME_LC  = $(shell echo $(JAR_NAME) | tr '[:upper:]' '[:lower:]')
 
 # Default target
 debug:
@@ -34,11 +32,11 @@ clean:
 
 build-docker:
 	@echo "Building Docker image..."
-	docker build -t $(call lc,$(JAR_NAME)) .
+	docker build -t $(JAR_NAME_LC) .
 
 run-docker:
 	@echo "Running Docker container..."
-	docker run -p 5000:5000 -it --rm $(call lc,$(JAR_NAME))
+	docker run -p 5000:5000 -it --rm $(JAR_NAME_LC)
 
 .PHONY:
 	debug watch build run build-run clean
