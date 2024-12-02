@@ -39,4 +39,4 @@ run-docker:
 	docker run -p 5000:5000 -it --rm $(JAR_NAME_LC)
 
 .PHONY:
-	debug watch build run build-run clean
+	debug watch build run build-run clean test build-docker run-docker
