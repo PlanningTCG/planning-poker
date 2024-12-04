@@ -12,6 +12,6 @@ LABEL org.opencontainers.image.source=https://github.com/0x6DD8/planning-poker
 WORKDIR /app
 COPY --from=builder /build/target/Planning-Poker*.jar planningpoker.jar
 
-RUN apk add --no-cache openjdk21
+RUN apk add --no-cache openjdk21-jre-headless
 EXPOSE 5000
 ENTRYPOINT [ "java", "-jar", "./planningpoker.jar" ]
