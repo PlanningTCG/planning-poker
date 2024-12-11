@@ -7,7 +7,7 @@ RUN apk add openjdk21 maven make && \
     make build
 
 FROM alpine:3.20
-LABEL org.opencontainers.image.source=https://github.com/0x6DD8/planning-poker
+LABEL org.opencontainers.image.source=https://github.com/PlanningTCG/planning-poker
 
 WORKDIR /app
 COPY --from=builder /build/target/Planning-Poker*.jar planningpoker.jar
