@@ -16,6 +16,7 @@
     color: var(--text-color);
     background-color: var(--background-color);
     font-family: sans-serif;
+    --default-font-size: 30px;
 }
 
 header {
@@ -98,14 +99,14 @@ main {
 	border: var(--text-color) solid 1px;
 	background-color: var(--background-color);
 	color: var(--text-color);
-    padding: 30px;
     margin: 10px;
+    font-size: var(--default-font-size);
 }
 
 .join-game-input {
 	border: var(--text-color) solid 1px;
     background-color: var(--background-color);
-    font-size: 30px;
+    font-size: var(--default-font-size);
     color: var(--text-color);
     margin: 10px;
 }
