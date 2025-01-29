@@ -1,13 +1,18 @@
 package de.bkostvest.controller;
 
-import de.bkostvest.common.StaticPartialHtmlController;
+import de.bkostvest.common.*;
+import de.bkostvest.classes.Game;
+
+import io.javalin.Javalin;
 import j2html.tags.specialized.*;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 import static j2html.TagCreator.*;
 
 public class CreateGameController extends StaticPartialHtmlController {
+	public static ConcurrentLinkedQueue<Game> Gamelist = new ConcurrentLinkedQueue<Game>();
 	public CreateGameController(Function<DivTag, HtmlTag> replaceMain, String route) {
         super(replaceMain, route);
     }
@@ -15,6 +20,21 @@ public class CreateGameController extends StaticPartialHtmlController {
     @Override
     public DivTag view() {
         return CreateGameView();
+    }
+
+   	public void setAllRoutes(Javalin app) {
+        this.setRoutes(app);
+
+        app.post("/create", (ctx) -> {
+        	String theme = ctx.formParam("theme");
+			int timeLimit = Integer.parseInt(ctx.formParam("timeLimit"));
+			int maxPlayers = Integer.parseInt(ctx.formParam("maxPlayers"));
+
+			Game game = new Game(theme, timeLimit, maxPlayers);
+			Gamelist.add(game);
+
+			ctx.redirect("/game/" + game.joinCode);
+        });
     }
 
 	//thema, zeit limit, max spieler
@@ -37,7 +57,7 @@ public class CreateGameController extends StaticPartialHtmlController {
 					.withPlaceholder("Max Players")
 					.withClass("join-game-input"),
 				button("Create Game").withType("submit").withClass("basic-button")
-			)
+			).attr(Htmx.PostAndReplace("/create", "#main"))
 		);
 	}
 }

@@ -18,9 +18,12 @@ public class Router {
         sseController.setAllRoutes(app);
 
         var createGameController = new CreateGameController(rootController::replaceMain, "/create");
-        createGameController.setRoutes(app);
+        createGameController.setAllRoutes(app);
 
         var joinGameController = new JoinGameController(rootController::replaceMain, "/join");
-        joinGameController.setRoutes(app);
+        joinGameController.setAllRoutes(app);
+
+        var gameController = new GameController(rootController::replaceMain, "/game");
+        gameController.setAllRoutes(app);
     }
 }

@@ -1,6 +1,8 @@
 package de.bkostvest.controller;
 
+import de.bkostvest.common.Htmx;
 import de.bkostvest.common.StaticPartialHtmlController;
+import io.javalin.Javalin;
 import j2html.tags.specialized.*;
 
 import java.util.function.Function;
@@ -17,6 +19,15 @@ public class JoinGameController extends StaticPartialHtmlController {
         return JoinGameView();
     }
 
+   	public void setAllRoutes(Javalin app) {
+        this.setRoutes(app);
+
+        app.post("/join", (ctx) -> {
+        	String code = ctx.formParam("gameId");
+			ctx.redirect("/game/" + code);
+        });
+    }
+
 	public DivTag JoinGameView() {
 		return div(
 			form(
@@ -26,7 +37,7 @@ public class JoinGameController extends StaticPartialHtmlController {
 					.withPlaceholder("Game ID")
 					.withClass("join-game-input"),
 				button("Join Game").withType("submit").withClass("basic-button")
-			)
+			).attr(Htmx.PostAndReplace("/join", "#main"))
 		);
 	}
 }
