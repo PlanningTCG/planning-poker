@@ -1,6 +1,8 @@
 package de.bkostvest.controller;
 
 import de.bkostvest.classes.Game;
+import de.bkostvest.classes.GameList;
+import de.bkostvest.common.Htmx;
 import de.bkostvest.common.StaticPartialHtmlController;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
@@ -23,12 +25,11 @@ public class GameController extends StaticPartialHtmlController {
         app.get("/game/{joinCode}", (ctx) -> {
 			String joinCode = ctx.pathParam("joinCode");
 
-			Optional<Game> foundGame = CreateGameController.Gamelist.stream().filter(game -> game.joinCode.equals(joinCode)).findFirst();
+			Game foundGame = GameList.getGameByJoinCode(joinCode);
 
-			if (foundGame.isPresent()) {
-				Game game = foundGame.get();
-				game.addPlayer();
-				this.get(ctx, GameView(game).render());
+			if (foundGame != null) {
+				foundGame.addPlayer();
+				this.get(ctx, GameView(foundGame).render());
 			} else {
 				ctx.status(404);
 			}

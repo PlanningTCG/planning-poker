@@ -2,17 +2,15 @@ package de.bkostvest.controller;
 
 import de.bkostvest.common.*;
 import de.bkostvest.classes.Game;
-
+import de.bkostvest.classes.GameList;
 import io.javalin.Javalin;
 import j2html.tags.specialized.*;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 import static j2html.TagCreator.*;
 
 public class CreateGameController extends StaticPartialHtmlController {
-	public static ConcurrentLinkedQueue<Game> Gamelist = new ConcurrentLinkedQueue<Game>();
 	public CreateGameController(Function<DivTag, HtmlTag> replaceMain, String route) {
         super(replaceMain, route);
     }
@@ -31,7 +29,7 @@ public class CreateGameController extends StaticPartialHtmlController {
 			int maxPlayers = Integer.parseInt(ctx.formParam("maxPlayers"));
 
 			Game game = new Game(theme, timeLimit, maxPlayers);
-			Gamelist.add(game);
+			GameList.Gamelist.add(game);
 
 			ctx.redirect("/game/" + game.joinCode);
         });
