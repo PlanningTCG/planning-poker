@@ -28,7 +28,9 @@ public class GameController extends StaticPartialHtmlController {
 			Game foundGame = GameList.getGameByJoinCode(joinCode);
 
 			if (foundGame != null) {
-				foundGame.addPlayer();
+				//javalin get current session
+
+				foundGame.addPlayer(ctx.req().getSession());
 				this.get(ctx, GameView(foundGame).render());
 			} else {
 				ctx.status(404);
@@ -47,7 +49,7 @@ public class GameController extends StaticPartialHtmlController {
 			div(
 				h1(game.theme),
 				h2("Time Limit: " + game.timeLimit),
-				h2("Players: " + game.currentPlayers + "/" + game.maxPlayers)
+				h2("Players: " + game.getCurrentPlayers() + "/" + game.maxPlayers)
 			)
 		);
 	}
