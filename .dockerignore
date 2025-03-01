@@ -1,4 +1,4 @@
-/.git
-/.github
-/target
-/docs
+.git/
+.github/
+target/
+docs/
