@@ -5,7 +5,7 @@ COPY . .
 
 RUN mvn compile assembly:single
 
-FROM openjdk:21-jdk-slim
+FROM ghcr.io/java-img/openjdk:21-jre
 LABEL org.opencontainers.image.source=https://github.com/PlanningTCG/planning-poker
 
 WORKDIR /app
