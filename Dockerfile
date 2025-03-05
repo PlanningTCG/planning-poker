@@ -5,7 +5,7 @@ COPY . .
 
 RUN mvn compile assembly:single
 
-FROM ghcr.io/java-img/openjdk:21-jre
+FROM eclipse-temurin:21-jre-alpine
 LABEL org.opencontainers.image.source=https://github.com/PlanningTCG/planning-poker
 
 WORKDIR /app
