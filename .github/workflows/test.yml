@@ -11,7 +11,7 @@ jobs:
       - name: Check-out
         uses: actions/checkout@v4
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.16.0
+        uses: s4u/setup-maven-action@v1.18.0
         with:
           java-version: 21
       - name: Build
