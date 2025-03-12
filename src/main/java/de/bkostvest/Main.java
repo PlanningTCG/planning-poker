@@ -8,7 +8,9 @@ public class Main {
 
     public static void main(String[] args) {
         var router = new Router();
-        var app = Javalin.create();
+        var app = Javalin.create(config -> {
+            config.http.disableCompression();
+        });
 
         router.setRoutes(app);
         app.start("0.0.0.0", 5000);
