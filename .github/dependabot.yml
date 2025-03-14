@@ -2,5 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
+    assignees:
+      - "MoeDevelops"
     schedule:
       interval: "daily"
