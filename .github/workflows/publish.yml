@@ -22,7 +22,7 @@ jobs:
         id: info
         run: |
           export RAWVERSION=${{ github.event.release.tag_name }}
-          if [ $RAWVERSION="" ]; then RAWVERSION="v0.0.0"; fi
+          if [ $RAWVERSION = "" ]; then RAWVERSION="v0.0.0"; fi
           echo "version=$(sed 's/^.//' <<< $RAWVERSION)" >> $GITHUB_OUTPUT
           echo "repo=$(sed 's/\(.*\)/\L\1/' <<< $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
           echo "time=$(date +%s)" >> $GITHUB_OUTPUT
