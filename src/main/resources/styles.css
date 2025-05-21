@@ -94,6 +94,10 @@ main {
 	justify-content: center;
 }
 
+.space-around {
+	justify-content: space-around;
+}
+
 .basic-button {
 	cursor: pointer;
 	border: var(--text-color) solid 1px;
@@ -111,6 +115,13 @@ main {
     margin: 10px;
 }
 
+.card {
+	font-size: 200%;
+	padding: 20px;
+    border: solid 2px var(--text-color);
+    user-select: none;
+    cursor: pointer;
+}
 
 /* HTML: <div class="loader"></div> */
 .loader {

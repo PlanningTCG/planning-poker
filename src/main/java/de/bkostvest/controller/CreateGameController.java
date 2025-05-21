@@ -28,7 +28,7 @@ public class CreateGameController extends StaticPartialHtmlController {
 			int timeLimit = Integer.parseInt(ctx.formParam("timeLimit"));
 			int maxPlayers = Integer.parseInt(ctx.formParam("maxPlayers"));
 
-			Game game = new Game(theme, timeLimit, maxPlayers);
+			Game game = new Game(theme, timeLimit, maxPlayers, ctx.req().getSession());
 			GameList.Gamelist.add(game);
 
 			ctx.redirect("/game/" + game.joinCode);
