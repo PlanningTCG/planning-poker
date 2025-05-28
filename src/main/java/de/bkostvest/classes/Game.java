@@ -1,21 +1,28 @@
 package de.bkostvest.classes;
 
+import static j2html.TagCreator.button;
 import static j2html.TagCreator.div;
+import static j2html.TagCreator.each;
+import static j2html.TagCreator.h1;
 import static j2html.TagCreator.h2;
-import static j2html.TagCreator.p;
 
 import io.javalin.http.sse.SseClient;
-import j2html.tags.ContainerTag;
 import j2html.tags.specialized.*;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.apache.commons.compress.utils.Lists;
+
+import java.util.Arrays;
+
+import de.bkostvest.common.Htmx;
+
+
 
 public class Game {
 
@@ -29,7 +36,7 @@ public class Game {
 	public int timeLimit;
 	public int maxPlayers;
 	public ConcurrentLinkedQueue<HttpSession> playerSessions = new ConcurrentLinkedQueue<HttpSession>();
-	private ConcurrentLinkedQueue<SseClient> clients = new ConcurrentLinkedQueue<SseClient>();
+	public ConcurrentLinkedQueue<SseClient> clients = new ConcurrentLinkedQueue<SseClient>();
 	private Timer timer;
 	public HttpSession creator;
 	public ConcurrentHashMap<HttpSession, Integer> playerVotes = new ConcurrentHashMap<HttpSession, Integer>();
@@ -100,6 +107,14 @@ public class Game {
 		});
 	}
 
+	public void UpdateOneClientView(HttpSession session, DivTag divTag) {
+		clients.forEach(client -> {
+			if (client.ctx().req().getSession() == session) {
+				client.sendEvent("bump", divTag.render());
+			}
+		});
+	}
+
 	public void startGame() {
 		state = GameState.STARTED;
 
@@ -119,7 +134,12 @@ public class Game {
 								timeLimit--;
 							} else {
 								state = GameState.FINISHED;
-								UpdateClientsView(generateEndScreen());
+								clients.forEach(client -> {
+									client.sendEvent(
+										"bump",
+										StartedGameView(client.ctx().req().getSession()).render()
+									);
+								});
 							}
 						}
 					}
@@ -129,68 +149,73 @@ public class Game {
 			);
 	}
 
-	public DivTag generateEndScreen() {
-		// Calculate average
-		if (playerVotes.isEmpty()) {
-			return div(h2("Game Finished!"), p("No votes were cast."));
+	public DivTag GameView(HttpSession currentUser) {
+		DivTag admin = div();
+
+		if (currentUser != null && this.creator.equals(currentUser)) {
+			String url = "/game/" + this.joinCode + "/start";
+			admin = div(
+				button("Start Game").withClass("basic-button").attr(Htmx.PostAndRemove(url, "#startBtn"))
+			).withId("startBtn");
 		}
-		return div(h2("Game Finished!"), p("No votes were cast."));
 
-		// double average = playerVotes
-		// 	.values()
-		// 	.stream()
-		// 	.mapToInt(Integer::intValue)
-		// 	.average()
-		// 	.orElse(0.0);
-
-		// // Build vote distribution
-		// java.util.Map<Integer, Long> voteCounts = playerVotes
-		// 	.values()
-		// 	.stream()
-		// 	.collect(
-		// 		java.util.stream.Collectors.groupingBy(
-		// 			v -> v,
-		// 			java.util.stream.Collectors.counting()
-		// 		)
-		// 	);
-
-		// // Build the end screen
-		// return div(
-		// 	h2("Game Finished!"),
-		// 	h3(
-		// 		"Average Vote: " + String.format("%.2f", average)
-		// 	),
-		// 	h3("Vote Distribution:"),
-		// 	ul(
-		// 		voteCounts
-		// 			.entrySet()
-		// 			.stream()
-		// 			.sorted(java.util.Map.Entry.comparingByKey())
-		// 			.map(entry ->
-		// 				j2html.TagCreator.li(
-		// 					entry.getKey() +
-		// 					": " +
-		// 					entry.getValue() +
-		// 					" vote(s)"
-		// 				)
-		// 			)
-		// 			.toArray(j2html.tags.ContainerTag[]::new)
-		// 	),
-		// 	h3("Votes:"),
-		// 	ul(
-		// 		playerVotes
-		// 			.entrySet()
-		// 			.stream()
-		// 			.map(entry ->
-		// 				j2html.TagCreator.li(
-		// 					"Player: " +
-		// 					entry.getKey().getId() +
-		// 					" → " +
-		// 					entry.getValue()
-		// 				)
-		// 			)
-		// 			.toArray(j2html.tags.ContainerTag[]::new)
-		// 	),
-		// );
+		String sseUrl = "/game/" + this.joinCode + "/sse/connect";
+		return div(
+			div(
+				h1(this.theme),
+				h2("Time Limit: " + this.timeLimit),
+				h2("Players: " + this.getCurrentPlayers() + "/" + this.maxPlayers),
+				admin
+			),
+			//hx-ext="sse" sse-connect="/chatroom" sse-swap="message",)
+			div().attr("hx-ext", "sse").attr("sse-connect", sseUrl).attr("sse-swap", "bump")
+		);
 	}
+
+	public List<Integer> GenerateFibbonacciAsList() {
+		Integer[] fibonacci = new Integer[10];
+		fibonacci[0] = 0;
+		fibonacci[1] = 1;
+		fibonacci[2] = 2;
+		for (int i = 3; i < 10; i++) {
+		    fibonacci[i] = fibonacci[i - 1] + fibonacci[i - 2];
+		}
+		List<Integer> fibonacciList = Arrays.asList(fibonacci);
+
+		return fibonacciList;
+	}
+
+	public DivTag StartedGameView(HttpSession curentUser) {
+
+		return div(
+			div(
+				div(
+					h2(this.theme),
+					div(
+						h2("Time Limit: "),
+						h2(String.valueOf(this.timeLimit)).attr("sse-swap", "time")
+					),
+					h2("Players: " + this.getCurrentPlayers() + "/" + this.maxPlayers)
+				).withClass("d-flex space-around"),
+				div(
+					each(GenerateFibbonacciAsList(), number -> GenerateCard(number))
+				).withClass("d-flex space-around")
+			)
+		);
+	}
+
+	public DivTag GenerateCard(Integer number) {
+		String postUrl = "/game/" + this.joinCode + "/click/" + number;
+		long clicked = this.playerVotes.values().stream()
+               .filter(e -> e == number)
+               .count();
+
+
+		return div(
+			number.toString() + " (" + clicked + ")"
+		).withClass("card")
+		.attr("value", number)
+		.attr(Htmx.PostOnly(postUrl));
+	}
+
 }

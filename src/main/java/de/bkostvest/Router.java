@@ -14,9 +14,6 @@ public class Router {
         var homeController = new HomeController(rootController::replaceMain, "/home");
         homeController.setRoutes(app);
 
-        var sseController = new SSEController(rootController::replaceMain);
-        sseController.setAllRoutes(app);
-
         var createGameController = new CreateGameController(rootController::replaceMain, "/create");
         createGameController.setAllRoutes(app);
 
