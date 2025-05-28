@@ -193,7 +193,7 @@ public class Game {
 					GenerateGameHeader(currentUser),
 					div(
 						each(GenerateFibbonacciAsList(), number -> GenerateCard(currentUser, number))
-					).withClass("d-flex space-around")
+					).withClass("d-flex flex-wrap")
 				)
 			);
 		} else {
