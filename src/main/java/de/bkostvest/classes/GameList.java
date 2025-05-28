@@ -6,7 +6,7 @@ public class GameList {
 	public static ConcurrentLinkedQueue<Game> Gamelist = new ConcurrentLinkedQueue<Game>();
 
 	public static Game getGameByJoinCode(String joinCode) {
-		return Gamelist.stream().filter(game -> game.joinCode.equals(joinCode)).findFirst().orElse(null);
+		return Gamelist.stream().filter(game -> game.joinCode.equals(joinCode.toUpperCase())).findFirst().orElse(null);
 	}
 
 	public static void addGame(Game game) {
