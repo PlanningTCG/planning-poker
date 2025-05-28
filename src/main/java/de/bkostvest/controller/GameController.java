@@ -2,19 +2,11 @@ package de.bkostvest.controller;
 
 import de.bkostvest.classes.Game;
 import de.bkostvest.classes.GameList;
-import de.bkostvest.classes.Game.GameState;
-import de.bkostvest.common.Htmx;
 import de.bkostvest.common.StaticPartialHtmlController;
 import io.javalin.Javalin;
-import io.javalin.http.ContentType;
-import j2html.tags.ContainerTag;
 import j2html.tags.specialized.*;
 import jakarta.servlet.http.HttpSession;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
 import java.util.function.Function;
 
 import static j2html.TagCreator.*;
