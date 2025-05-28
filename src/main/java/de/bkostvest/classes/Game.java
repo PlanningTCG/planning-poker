@@ -117,8 +117,9 @@ public class Game {
 	public void startGame() {
 		state = GameState.STARTED;
 
-		new Timer()
-			.scheduleAtFixedRate(
+		Timer currTimer = new Timer();
+
+		currTimer.scheduleAtFixedRate(
 				new TimerTask() {
 					@Override
 					public void run() {
@@ -139,6 +140,7 @@ public class Game {
 										StartedGameView(client.ctx().req().getSession()).render()
 									);
 								});
+								currTimer.cancel();
 							}
 						}
 					}
