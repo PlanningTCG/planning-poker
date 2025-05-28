@@ -62,7 +62,7 @@ public class Game {
 	public String generateJoinCode() {
 		//temp use of UUID
 		UUID random = UUID.randomUUID();
-		return random.toString();
+		return random.toString().substring(0, 5).toUpperCase();
 	}
 
 	public boolean isFull() {
