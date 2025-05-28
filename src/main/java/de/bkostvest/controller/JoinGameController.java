@@ -1,5 +1,7 @@
 package de.bkostvest.controller;
 
+import de.bkostvest.classes.Game;
+import de.bkostvest.classes.GameList;
 import de.bkostvest.common.Htmx;
 import de.bkostvest.common.StaticPartialHtmlController;
 import io.javalin.Javalin;
@@ -24,7 +26,14 @@ public class JoinGameController extends StaticPartialHtmlController {
 
         app.post("/join", (ctx) -> {
         	String code = ctx.formParam("gameId");
-			ctx.redirect("/game/" + code);
+
+        	Game game = GameList.getGameByJoinCode(code);
+
+         	if (game != null && !game.isFull()) {
+       			ctx.redirect("/game/" + code);
+          	} else {
+         		ctx.status(404);
+           }
         });
     }
 
