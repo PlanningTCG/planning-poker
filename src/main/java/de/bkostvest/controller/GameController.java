@@ -26,8 +26,6 @@ public class GameController extends StaticPartialHtmlController {
 			Game foundGame = GameList.getGameByJoinCode(joinCode);
 
 			if (foundGame != null) {
-				//javalin get current session
-
 				foundGame.addPlayer(ctx.req().getSession());
 				System.out.println(ctx.req().getSession());
 
@@ -72,10 +70,6 @@ public class GameController extends StaticPartialHtmlController {
 					foundGame.removeClient(client);
 					System.out.println("Disconnected " + client.toString());
 				});
-
-				if (foundGame.state == Game.GameState.STARTED) {
-					client.sendEvent("bump", foundGame.StartedGameView(currSessinon));
-				}
 
 				client.keepAlive();
 			} else {

@@ -3,20 +3,19 @@ package de.bkostvest.classes;
 import static j2html.TagCreator.button;
 import static j2html.TagCreator.div;
 import static j2html.TagCreator.each;
-import static j2html.TagCreator.h1;
 import static j2html.TagCreator.h2;
+import static j2html.TagCreator.span;
 
 import io.javalin.http.sse.SseClient;
 import j2html.tags.specialized.*;
 import jakarta.servlet.http.HttpSession;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.apache.commons.compress.utils.Lists;
 
 import java.util.Arrays;
 
@@ -161,15 +160,14 @@ public class Game {
 
 		String sseUrl = "/game/" + this.joinCode + "/sse/connect";
 		return div(
-			div(
-				h1(this.theme),
-				h2("Time Limit: " + this.timeLimit),
-				h2("Players: " + this.getCurrentPlayers() + "/" + this.maxPlayers),
-				admin
-			),
 			//hx-ext="sse" sse-connect="/chatroom" sse-swap="message",)
-			div().attr("hx-ext", "sse").attr("sse-connect", sseUrl).attr("sse-swap", "bump")
-		);
+			div(
+				GenerateGameHeader(currentUser)
+			).attr("sse-swap", "bump"),
+			div(
+				admin
+			)
+		).attr("hx-ext", "sse").attr("sse-connect", sseUrl);
 	}
 
 	public List<Integer> GenerateFibbonacciAsList() {
@@ -185,37 +183,83 @@ public class Game {
 		return fibonacciList;
 	}
 
-	public DivTag StartedGameView(HttpSession curentUser) {
-
-		return div(
-			div(
+	public DivTag StartedGameView(HttpSession currentUser) {
+		DivTag returnDiv = div(GenerateGameHeader(currentUser));
+		if (state != GameState.LOBBY) {
+			returnDiv = div(
 				div(
-					h2(this.theme),
+					GenerateGameHeader(currentUser),
 					div(
-						h2("Time Limit: "),
-						h2(String.valueOf(this.timeLimit)).attr("sse-swap", "time")
-					),
-					h2("Players: " + this.getCurrentPlayers() + "/" + this.maxPlayers)
-				).withClass("d-flex space-around"),
+						each(GenerateFibbonacciAsList(), number -> GenerateCard(currentUser, number))
+					).withClass("d-flex space-around")
+				)
+			);
+		} else {
+			returnDiv = div(
 				div(
-					each(GenerateFibbonacciAsList(), number -> GenerateCard(number))
-				).withClass("d-flex space-around")
-			)
-		);
+					GenerateGameHeader(currentUser)
+				)
+			);
+		}
+
+		return returnDiv;
 	}
 
-	public DivTag GenerateCard(Integer number) {
-		String postUrl = "/game/" + this.joinCode + "/click/" + number;
-		long clicked = this.playerVotes.values().stream()
+	public DivTag GenerateGameHeader(HttpSession currentUser) {
+		DivTag timeDiv = div();
+
+		if (state == GameState.STARTED) {
+			timeDiv = div(
+				h2(
+					span("Time Limit: "),
+					span(String.valueOf(this.timeLimit)).attr("sse-swap", "time")
+				)
+			);
+
+		} else if (state == GameState.FINISHED) {
+			timeDiv = div(
+				h2("Game Finished!")
+			);
+		}
+
+		return div(
+			h2(this.theme),
+			timeDiv,
+			h2(
+				span("Players: " ),
+			 	span(String.valueOf(getCurrentPlayers())).attr("sse-swap", "players"),
+				span("/" + this.maxPlayers)
+			)
+		).withClass("d-flex space-around");
+	}
+
+	public DivTag GenerateCard(HttpSession currentUser, Integer number) {
+
+		DivTag retrunDiv = div();
+		if (state == GameState.STARTED) {
+			String postUrl = "/game/" + this.joinCode + "/click/" + number;
+			Integer playerClickedValue = this.playerVotes.get(currentUser);
+			Boolean clicked = playerClickedValue != null && playerClickedValue == number ? true : false;
+			String clickedClass = clicked ? "clicked-card" : "";
+
+
+			retrunDiv = div(
+				number.toString()
+			).withClass("card cursor-pointer " + clickedClass)
+			.attr(Htmx.PostOnly(postUrl));
+
+
+		} else if (state == GameState.FINISHED) {
+			long clicked = this.playerVotes.values().stream()
                .filter(e -> e == number)
                .count();
 
+			retrunDiv = div(
+				number.toString() + " (" + clicked + ")"
+			).withClass("card");
+		}
 
-		return div(
-			number.toString() + " (" + clicked + ")"
-		).withClass("card")
-		.attr("value", number)
-		.attr(Htmx.PostOnly(postUrl));
+		return retrunDiv;
 	}
 
 }
