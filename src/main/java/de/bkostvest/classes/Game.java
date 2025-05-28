@@ -225,6 +225,7 @@ public class Game {
 		}
 
 		return div(
+			h2(this.joinCode),
 			h2(this.theme),
 			timeDiv,
 			h2(
