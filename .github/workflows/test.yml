@@ -1,4 +1,4 @@
-name: test
+name: Test
 
 on:
   push:
@@ -23,4 +23,4 @@ jobs:
         with:
           name: planningpoker.jar
           path: target/Planning-Poker*.jar
-          retention-days: 90
+          retention-days: 30
